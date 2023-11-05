@@ -1,0 +1,5 @@
+accessWidener v2 named
+accessible class net/minecraft/client/option/GameOptions$Visitor
+accessible method net/minecraft/client/network/AbstractClientPlayerEntity getPlayerListEntry ()Lnet/minecraft/client/network/PlayerListEntry;
+accessible method net/minecraft/client/texture/PlayerSkinTexture loadTexture (Ljava/io/InputStream;)Lnet/minecraft/client/texture/NativeImage;
+accessible method net/minecraft/client/texture/PlayerSkinTexture onTextureLoaded (Lnet/minecraft/client/texture/NativeImage;)V
