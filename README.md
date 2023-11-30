@@ -8,3 +8,4 @@ Texture locations (all start with assets/offlineskins/):
 `cape-self.png` - Cape texture for yourself, defaults to `cape.png` if missing  
 `skin-others.png` - Skin texture for others, defaults to `skin.png`  if missing  
 `cape-others.png` - Cape texture for others, defaults to `cape.png`  if missing  
+Starting in version 1.1.0, you can also use Skin Packs, a setup wizard for OfflineSkins resource packs.
