@@ -1,10 +1,9 @@
 package me.thosea.offlineskins.mixin;
 
 import me.thosea.offlineskins.OfflineSkins;
-import me.thosea.offlineskins.PlayerListEntryAccessor;
-import me.thosea.offlineskins.ScreenAccessor;
 import me.thosea.offlineskins.SkinSettings;
-import net.minecraft.client.MinecraftClient;
+import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
+import me.thosea.offlineskins.screen.SettingsScreen;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.SkinOptionsScreen;
@@ -26,10 +25,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SkinOptionsScreen.class)
-public abstract class SkinScreenMixin extends Screen {
+public abstract class MixinSkinScreen extends Screen {
 	@Unique private boolean isCustom;
 
-	protected SkinScreenMixin(Text title) {
+	protected MixinSkinScreen(Text title) {
 		super(title);
 		throw new AssertionError();
 	}
@@ -45,7 +44,7 @@ public abstract class SkinScreenMixin extends Screen {
 		if(isCustom) return;
 		var button = addDrawableChild(ButtonWidget.builder(
 						Text.translatable("offlineskins.settings"),
-						ignored -> MinecraftClient.getInstance().setScreen(new SkinSettings(this)))
+						ignored -> client.setScreen(new SettingsScreen(this)))
 				.dimensions(this.width / 2 - 100, this.height / 6 + 96, 200, 20)
 				.build());
 
@@ -75,7 +74,8 @@ public abstract class SkinScreenMixin extends Screen {
 			OfflineSkins.ENTERING_SKIN_SCREEN = false;
 			isCustom = true;
 			index = -1;
-			((ScreenAccessor) this).setTitle(Text.translatable("offlineskins.settings.modelParts.title"));
+
+			this.title = Text.translatable("offlineskins.settings.modelParts.title");
 		} else {
 			isCustom = false;
 		}
@@ -117,8 +117,11 @@ public abstract class SkinScreenMixin extends Screen {
 		if(!isCustom && client.player != null) {
 			var entry = client.player.getPlayerListEntry();
 
-			if(entry != null && ((PlayerListEntryAccessor) entry).isOverridden()) {
-				((ClickableWidget) element).active = false;
+			if(entry != null && ((PlayerEntryAccessor) entry).isOverriddenOfflineSkins()) {
+				ClickableWidget widget = (ClickableWidget) element;
+
+				widget.active = false;
+				widget.setTooltip(Tooltip.of(Text.translatable("offlineskins.SCDisabled")));
 			}
 		}
 

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(YggdrasilMinecraftSessionService.class)
-public class MinecraftSessionServerMixin {
+public class MixinSessionService {
 	@Overwrite(remap = false)
 	public String getSecurePropertyValue(Property property) {
 		return property.value();

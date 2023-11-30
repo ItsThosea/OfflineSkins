@@ -1,17 +1,22 @@
 package me.thosea.offlineskins;
 
+import me.thosea.offlineskins.accessor.PlayerAccessor;
+import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.PlayerSkinTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -26,7 +31,7 @@ public final class OfflineSkins implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("offlineskins");
 
 	public static String ERROR = null;
-	public static boolean IS_LOADING = false;
+	public static boolean FORWARD_EXCEPTION = false;
 
 	private static final Identifier SKIN_ID = new Identifier("offlineskins", "skin.png");
 	private static final Identifier CAPE_ID = new Identifier("offlineskins", "cape.png");
@@ -59,6 +64,20 @@ public final class OfflineSkins implements ClientModInitializer {
 		});
 	}
 
+	public static void refresh() {
+		MinecraftClient client = MinecraftClient.getInstance();
+		ClientPlayNetworkHandler network = client.getNetworkHandler();
+
+		if(network != null && client.world != null) {
+			for(PlayerListEntry entry : network.getListedPlayerListEntries()) {
+				PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
+				PlayerEntity player = client.world.getPlayerByUuid(entry.getProfile().getId());
+
+				accessor.refreshOfflineSkins((PlayerAccessor) player);
+			}
+		}
+	}
+
 	private static class SkinLoader implements SimpleSynchronousResourceReloadListener {
 		@Override
 		public Identifier getFabricId() {
@@ -68,12 +87,11 @@ public final class OfflineSkins implements ClientModInitializer {
 		@Override
 		public void reload(ResourceManager manager) {
 			try {
-				IS_LOADING = true;
+				FORWARD_EXCEPTION = true;
 				init(manager);
 				ERROR = null;
-				SkinSettings.refresh(null);
+				refresh();
 			} catch(Throwable e) {
-				SkinSettings.ENABLED.setValue(false);
 				LOGGER.error("An error has occurred while loading textures", e);
 				LOGGER.error("The mod will remain disabled until textures have been loaded successfully.");
 
@@ -82,7 +100,7 @@ public final class OfflineSkins implements ClientModInitializer {
 
 				ERROR = root.toString();
 			} finally {
-				IS_LOADING = false;
+				FORWARD_EXCEPTION = false;
 			}
 		}
 

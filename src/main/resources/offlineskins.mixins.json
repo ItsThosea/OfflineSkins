@@ -6,14 +6,14 @@
     "defaultRequire": 1
   },
   "client": [
-    "MinecraftSessionServerMixin",
-    "OptionsMixin",
-    "PlayerListEntryMixin",
-    "PlayerListHudMixin",
-    "PlayerMixin",
-    "ScreenMixin",
-    "SkinScreenMixin",
-    "SkinTextureMixin",
-    "TextureManagerAccessor"
+    "MixinClientPlayer",
+    "MixinConfirmScreen",
+    "MixinGameOptions",
+    "MixinListHud",
+    "MixinPlayerEntry",
+    "MixinPlayerSkinTexture",
+    "MixinSessionService",
+    "MixinSkinProvider",
+    "MixinSkinScreen"
   ]
 }
