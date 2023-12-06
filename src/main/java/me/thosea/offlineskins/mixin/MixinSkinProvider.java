@@ -1,6 +1,5 @@
 package me.thosea.offlineskins.mixin;
 
-import com.mojang.authlib.GameProfile;
 import me.thosea.offlineskins.accessor.PlayerAccessor;
 import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -14,24 +13,27 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(targets = "net.minecraft.client.texture.PlayerSkinProvider$1")
 public final class MixinSkinProvider {
-	@Inject(method = "load(Lnet/minecraft/client/texture/PlayerSkinProvider$Key;)Ljava/util/concurrent/CompletableFuture;", at = @At("TAIL"))
-	private void getTextureFuture(Key key, CallbackInfoReturnable<CompletableFuture<SkinTextures>> cir) {
-		GameProfile profile = key.profile();
-		cir.getReturnValue().whenCompleteAsync((textures, error) -> {
+	@Inject(method = "load(Ljava/lang/Object;)Ljava/lang/Object;", at = @At("TAIL"))
+	private void getTextureFuture(Object value, CallbackInfoReturnable<Object> cir) {
+		var future = ((CompletableFuture<SkinTextures>) cir.getReturnValue());
+		UUID id = ((Key) value).profileId();
+
+		future.whenCompleteAsync((textures, error) -> {
 			if(textures == null) return;
 
 			MinecraftClient client = MinecraftClient.getInstance();
 			client.submit(() -> {
 				ClientPlayNetworkHandler network = client.getNetworkHandler();
 				if(network == null) return;
-				PlayerListEntry entry = network.getPlayerListEntry(profile.getId());
+				PlayerListEntry entry = network.getPlayerListEntry(id);
 				if(entry == null) return;
 				if(client.world == null) return;
-				PlayerEntity player = client.world.getPlayerByUuid(profile.getId());
+				PlayerEntity player = client.world.getPlayerByUuid(id);
 				((PlayerEntryAccessor) entry).refreshOfflineSkins((PlayerAccessor) player);
 			});
 		});

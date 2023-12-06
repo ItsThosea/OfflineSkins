@@ -19,8 +19,6 @@ import static me.thosea.offlineskins.SkinSettings.SKIN_MODE;
 import static me.thosea.offlineskins.SkinSettings.TAB_MODE;
 
 public final class SettingsScreen extends GameOptionsScreen {
-	private OptionListWidget list;
-
 	public SettingsScreen(Screen parent) {
 		super(parent, null, Text.translatable("offlineskins.settings"));
 	}
@@ -32,13 +30,14 @@ public final class SettingsScreen extends GameOptionsScreen {
 			return;
 		}
 
-		list = new OptionListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+		OptionListWidget list = new OptionListWidget(this.client, this.width, this.height - 64, 32, 25);
 
 		list.addOptionEntry(ENABLED, GLOBAL_MODE);
 		list.addOptionEntry(MODEL_TYPE, SKIN_MODE);
 		list.addOptionEntry(BUTTON_MODEL_PARTS, CAPE_MODE);
 		list.addOptionEntry(BUTTON_MAKE_SKIN_PACK, TAB_MODE);
 
+		this.addDrawableChild(list);
 		this.addSelectableChild(list);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, (button) -> {
 			this.close();
@@ -47,9 +46,10 @@ public final class SettingsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.render(context, this.list, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 	}
-
+	
 	@Override
 	public void removed() {}
 }
