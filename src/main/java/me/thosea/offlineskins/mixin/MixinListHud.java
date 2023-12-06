@@ -4,7 +4,7 @@ import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -17,12 +17,12 @@ public class MixinListHud {
 		return true;
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getSkinTextures()Lnet/minecraft/client/util/SkinTextures;"))
-	private SkinTextures getSkinTextures(PlayerListEntry entry) {
+	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getSkinTexture()Lnet/minecraft/util/Identifier;"))
+	private Identifier getSkinTextures(PlayerListEntry entry) {
 		PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
 
 		return accessor.overrideInTab() // false if no texture
-				? accessor.getOfflineSkinsTexture()
-				: entry.getSkinTextures(); // vanilla
+				? accessor.osCapeTexture()
+				: entry.getSkinTexture(); // vanilla
 	}
 }

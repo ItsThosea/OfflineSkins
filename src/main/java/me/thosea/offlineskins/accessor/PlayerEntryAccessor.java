@@ -1,10 +1,11 @@
 package me.thosea.offlineskins.accessor;
 
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.util.Identifier;
 
 public interface PlayerEntryAccessor {
 	void refreshOfflineSkins(PlayerAccessor player);
 	boolean overrideInTab();
 	boolean isOverriddenOfflineSkins();
-	SkinTextures getOfflineSkinsTexture();
+	Identifier osSkinTexture();
+	Identifier osCapeTexture();
 }

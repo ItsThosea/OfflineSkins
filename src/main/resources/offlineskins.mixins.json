@@ -13,7 +13,6 @@
     "MixinPlayerEntry",
     "MixinPlayerSkinTexture",
     "MixinSessionService",
-    "MixinSkinProvider",
     "MixinSkinScreen"
   ]
 }

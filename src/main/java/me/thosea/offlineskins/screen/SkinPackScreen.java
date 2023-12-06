@@ -188,6 +188,7 @@ public final class SkinPackScreen extends Screen {
 			return;
 		}
 
+		clearChildren();
 		client.setScreen(new SimpleMessageScreen(
 				Text.translatable(PREFIX + "skinPacks.created",
 						Text.literal(name).formatted(Formatting.GRAY, Formatting.ITALIC)),
@@ -259,14 +260,10 @@ public final class SkinPackScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
+		this.renderBackground(context);
 		list.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, title, this.width / 2, 20, 16777215);
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.option.SimpleOption.PotentialValuesBasedCallbacks;
 import net.minecraft.client.option.SimpleOption.TooltipFactory;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.util.SkinTextures.Model;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
@@ -45,6 +44,19 @@ public final class SkinSettings {
 							}, Model::ordinal)),
 					Model.WIDE,
 					SkinSettings::refresh);
+
+
+	public enum Model {
+		SLIM("slim"),
+		WIDE("default");
+
+		public final String name;
+
+		Model(String name) {
+			this.name = name;
+		}
+	}
+
 	public static final SimpleOption<?> BUTTON_MODEL_PARTS = makeButtonOption(
 			PREFIX + "modelParts",
 			() -> {
@@ -60,7 +72,6 @@ public final class SkinSettings {
 				client.setScreen(new SkinPackScreen(client.currentScreen));
 			});
 	public static final Set<PlayerModelPart> ENABLED_PARTS = EnumSet.allOf(PlayerModelPart.class);
-
 	private static final OverrideMode[] values = OverrideMode.values();
 	private static SimpleOption<OverrideMode> makeOverrideMode(String name, OverrideMode def) {
 		return new SimpleOption<>(PREFIX + name,

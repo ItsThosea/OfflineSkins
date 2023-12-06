@@ -8,8 +8,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -60,11 +60,19 @@ public abstract class MixinClientPlayer extends PlayerEntity implements PlayerAc
 		this.isCustom = enabled;
 	}
 
-	@Redirect(method = "getSkinTextures", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getSkinTextures()Lnet/minecraft/client/util/SkinTextures;"))
-	private SkinTextures getSkinTextures(PlayerListEntry entry) {
+	@Redirect(method = "getSkinTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getSkinTexture()Lnet/minecraft/util/Identifier;"))
+	private Identifier getSkinTextures(PlayerListEntry entry) {
 		PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
-		SkinTextures textures = accessor.getOfflineSkinsTexture();
+		Identifier textures = accessor.osSkinTexture();
 
-		return textures == null ? entry.getSkinTextures() : textures;
+		return textures == null ? entry.getSkinTexture() : textures;
+	}
+
+	@Redirect(method = "getCapeTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getCapeTexture()Lnet/minecraft/util/Identifier;"))
+	private Identifier getCapeTexture(PlayerListEntry entry) {
+		PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
+		Identifier textures = accessor.osCapeTexture();
+
+		return textures == null ? entry.getCapeTexture() : textures;
 	}
 }

@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class MixinSessionService {
 	@Overwrite(remap = false)
 	public String getSecurePropertyValue(Property property) {
-		return property.value();
+		return property.getValue();
 	}
 }
