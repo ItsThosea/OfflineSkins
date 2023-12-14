@@ -1,13 +1,11 @@
-package me.thosea.offlineskins.mixin;
+package me.thosea.specialskin.mixin;
 
-import me.thosea.offlineskins.accessor.PlayerAccessor;
-import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
+import me.thosea.specialskin.accessor.PlayerEntryAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.texture.PlayerSkinProvider.Key;
 import net.minecraft.client.util.SkinTextures;
-import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,9 +30,7 @@ public final class MixinSkinProvider {
 				if(network == null) return;
 				PlayerListEntry entry = network.getPlayerListEntry(id);
 				if(entry == null) return;
-				if(client.world == null) return;
-				PlayerEntity player = client.world.getPlayerByUuid(id);
-				((PlayerEntryAccessor) entry).refreshOfflineSkins((PlayerAccessor) player);
+				((PlayerEntryAccessor) entry).sskin$refresh();
 			});
 		});
 	}

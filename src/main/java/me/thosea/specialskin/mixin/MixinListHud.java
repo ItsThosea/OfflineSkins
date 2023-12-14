@@ -1,6 +1,6 @@
-package me.thosea.offlineskins.mixin;
+package me.thosea.specialskin.mixin;
 
-import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
+import me.thosea.specialskin.accessor.PlayerEntryAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
@@ -21,8 +21,8 @@ public class MixinListHud {
 	private SkinTextures getSkinTextures(PlayerListEntry entry) {
 		PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
 
-		return accessor.overrideInTab() // false if no texture
-				? accessor.getOfflineSkinsTexture()
+		return accessor.sskin$overrideInTab() // false if no texture
+				? accessor.sskin$getTexture()
 				: entry.getSkinTextures(); // vanilla
 	}
 }

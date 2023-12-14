@@ -1,7 +1,7 @@
-package me.thosea.offlineskins.mixin;
+package me.thosea.specialskin.mixin;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import me.thosea.offlineskins.accessor.ConfirmScreenAccessor;
+import me.thosea.specialskin.accessor.ConfirmScreenAccessor;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
@@ -19,22 +19,17 @@ public final class MixinConfirmScreen implements ConfirmScreenAccessor {
 	@Shadow @Final private List<ButtonWidget> buttons;
 
 	@Override
-	public void setMessage(Text message) {
+	public void sskin$setMessage(Text message) {
 		this.message = message;
 	}
 
 	@Override
-	public Text getMessage() {
-		return message;
-	}
-
-	@Override
-	public void setCallback(BooleanConsumer callback) {
+	public void sskin$setCallback(BooleanConsumer callback) {
 		this.callback = callback;
 	}
 
 	@Override
-	public List<ButtonWidget> getButtons() {
+	public List<ButtonWidget> sskin$getWidgets() {
 		return buttons;
 	}
 }

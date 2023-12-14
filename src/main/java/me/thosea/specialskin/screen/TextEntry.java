@@ -1,4 +1,4 @@
-package me.thosea.offlineskins.screen;
+package me.thosea.specialskin.screen;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.MinecraftClient;

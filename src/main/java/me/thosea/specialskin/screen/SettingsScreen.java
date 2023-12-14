@@ -1,6 +1,6 @@
-package me.thosea.offlineskins.screen;
+package me.thosea.specialskin.screen;
 
-import me.thosea.offlineskins.OfflineSkins;
+import me.thosea.specialskin.SpecialSkin;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
@@ -9,23 +9,23 @@ import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
-import static me.thosea.offlineskins.SkinSettings.BUTTON_MAKE_SKIN_PACK;
-import static me.thosea.offlineskins.SkinSettings.BUTTON_MODEL_PARTS;
-import static me.thosea.offlineskins.SkinSettings.CAPE_MODE;
-import static me.thosea.offlineskins.SkinSettings.ENABLED;
-import static me.thosea.offlineskins.SkinSettings.GLOBAL_MODE;
-import static me.thosea.offlineskins.SkinSettings.MODEL_TYPE;
-import static me.thosea.offlineskins.SkinSettings.SKIN_MODE;
-import static me.thosea.offlineskins.SkinSettings.TAB_MODE;
+import static me.thosea.specialskin.SkinSettings.BUTTON_MAKE_SKIN_PACK;
+import static me.thosea.specialskin.SkinSettings.BUTTON_MODEL_PARTS;
+import static me.thosea.specialskin.SkinSettings.CAPE_MODE;
+import static me.thosea.specialskin.SkinSettings.ENABLED;
+import static me.thosea.specialskin.SkinSettings.GLOBAL_MODE;
+import static me.thosea.specialskin.SkinSettings.MODEL_TYPE;
+import static me.thosea.specialskin.SkinSettings.SKIN_MODE;
+import static me.thosea.specialskin.SkinSettings.TAB_MODE;
 
 public final class SettingsScreen extends GameOptionsScreen {
 	public SettingsScreen(Screen parent) {
-		super(parent, null, Text.translatable("offlineskins.settings"));
+		super(parent, null, Text.translatable("specialskin.settings"));
 	}
 
 	@Override
 	protected void init() {
-		if(OfflineSkins.ERROR != null) {
+		if(SpecialSkin.ERROR != null) {
 			client.setScreen(parent);
 			return;
 		}

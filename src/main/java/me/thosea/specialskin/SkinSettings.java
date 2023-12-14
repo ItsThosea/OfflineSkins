@@ -1,8 +1,8 @@
-package me.thosea.offlineskins;
+package me.thosea.specialskin;
 
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.booleans.Boolean2BooleanFunction;
-import me.thosea.offlineskins.screen.SkinPackScreen;
+import me.thosea.specialskin.screen.SkinPackScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.option.SkinOptionsScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -22,7 +22,7 @@ import java.util.Set;
 public final class SkinSettings {
 	private SkinSettings() {}
 
-	public static final String PREFIX = "offlineskins.settings.";
+	public static final String PREFIX = "specialskin.settings.";
 
 	public static final SimpleOption<Boolean> ENABLED =
 			SimpleOption.ofBoolean(PREFIX + "enabled", true, SkinSettings::refresh);
@@ -48,7 +48,7 @@ public final class SkinSettings {
 	public static final SimpleOption<?> BUTTON_MODEL_PARTS = makeButtonOption(
 			PREFIX + "modelParts",
 			() -> {
-				OfflineSkins.ENTERING_SKIN_SCREEN = true;
+				SpecialSkin.ENTERING_SKIN_SCREEN = true;
 
 				MinecraftClient client = MinecraftClient.getInstance();
 				client.setScreen(new SkinOptionsScreen(client.currentScreen, client.options));
@@ -98,7 +98,7 @@ public final class SkinSettings {
 	}
 
 	private static void refresh(Object dummy) {
-		OfflineSkins.refresh();
+		SpecialSkin.refresh();
 	}
 
 	public enum OverrideMode {

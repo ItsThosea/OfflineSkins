@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "offlineskins",
+  "id": "specialskin",
   "version": "${version}",
-  "name": "OfflineSkins",
+  "name": "SpecialSkin",
   "description": "Customize other players' skins and capes",
   "authors": [
     "Thosea"
@@ -11,17 +11,17 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "me.thosea.offlineskins.OfflineSkins"
+      "me.thosea.specialskin.SpecialSkin"
     ]
   },
-  "icon": "assets/offlineskins/icon.png",
+  "icon": "assets/specialskin/icon.png",
   "mixins": [
-    "offlineskins.mixins.json"
+    "specialskin.mixins.json"
   ],
   "depends": {
     "java": ">=17",
     "minecraft": ">=1.20.3",
     "fabric-api": "*"
   },
-  "accessWidener": "offlineskins.accesswidener"
+  "accessWidener": "specialskin.accesswidener"
 }

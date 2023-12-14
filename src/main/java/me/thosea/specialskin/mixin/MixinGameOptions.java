@@ -1,6 +1,6 @@
-package me.thosea.offlineskins.mixin;
+package me.thosea.specialskin.mixin;
 
-import me.thosea.offlineskins.SkinSettings;
+import me.thosea.specialskin.SkinSettings;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GameOptions.Visitor;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -13,17 +13,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGameOptions {
 	@Inject(method = "accept", at = @At("TAIL"))
 	private void accept(Visitor visitor, CallbackInfo ci) {
-		visitor.accept("offlineskins.enabled", SkinSettings.ENABLED);
-		visitor.accept("offlineskins.globalMode", SkinSettings.GLOBAL_MODE);
-		visitor.accept("offlineskins.skinMode", SkinSettings.SKIN_MODE);
-		visitor.accept("offlineskins.capeMode", SkinSettings.CAPE_MODE);
-		visitor.accept("offlineskins.tabMode", SkinSettings.TAB_MODE);
-		visitor.accept("offlineskins.modelType", SkinSettings.MODEL_TYPE);
+		visitor.accept("specialskin.enabled", SkinSettings.ENABLED);
+		visitor.accept("specialskin.globalMode", SkinSettings.GLOBAL_MODE);
+		visitor.accept("specialskin.skinMode", SkinSettings.SKIN_MODE);
+		visitor.accept("specialskin.capeMode", SkinSettings.CAPE_MODE);
+		visitor.accept("specialskin.tabMode", SkinSettings.TAB_MODE);
+		visitor.accept("specialskin.modelType", SkinSettings.MODEL_TYPE);
 
 		for(PlayerModelPart part : PlayerModelPart.values()) {
 			boolean wasEnabled = SkinSettings.ENABLED_PARTS.contains(part);
 			boolean isEnabled = visitor.visitBoolean(
-					"offlineskins.modelPart_" + part.getName(),
+					"specialskin.modelPart_" + part.getName(),
 					wasEnabled);
 
 			if(isEnabled != wasEnabled) {

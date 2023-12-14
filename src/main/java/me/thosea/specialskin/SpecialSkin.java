@@ -1,7 +1,6 @@
-package me.thosea.offlineskins;
+package me.thosea.specialskin;
 
-import me.thosea.offlineskins.accessor.PlayerAccessor;
-import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
+import me.thosea.specialskin.accessor.PlayerEntryAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -16,7 +15,6 @@ import net.minecraft.client.texture.PlayerSkinTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -27,14 +25,14 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public final class OfflineSkins implements ClientModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger("offlineskins");
+public final class SpecialSkin implements ClientModInitializer {
+	public static final Logger LOGGER = LoggerFactory.getLogger("specialskin");
 
 	public static String ERROR = null;
 	public static boolean FORWARD_EXCEPTION = false;
 
-	private static final Identifier SKIN_ID = new Identifier("offlineskins", "skin.png");
-	private static final Identifier CAPE_ID = new Identifier("offlineskins", "cape.png");
+	private static final Identifier SKIN_ID = new Identifier("specialskin", "skin.png");
+	private static final Identifier CAPE_ID = new Identifier("specialskin", "cape.png");
 
 	public static Identifier SELF_SKIN_ID = SKIN_ID;
 	public static Identifier SELF_CAPE_ID = CAPE_ID;
@@ -51,10 +49,10 @@ public final class OfflineSkins implements ClientModInitializer {
 				.registerReloadListener(new SkinLoader());
 
 		KeyBinding toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"offlineskins.keybind.name",
+				"specialskin.keybind.name",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_L,
-				"offlineskins.keybind.category"
+				"specialskin.keybind.category"
 		));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -70,10 +68,7 @@ public final class OfflineSkins implements ClientModInitializer {
 
 		if(network != null && client.world != null) {
 			for(PlayerListEntry entry : network.getListedPlayerListEntries()) {
-				PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
-				PlayerEntity player = client.world.getPlayerByUuid(entry.getProfile().getId());
-
-				accessor.refreshOfflineSkins((PlayerAccessor) player);
+				((PlayerEntryAccessor) entry).sskin$refresh();
 			}
 		}
 	}
@@ -81,7 +76,7 @@ public final class OfflineSkins implements ClientModInitializer {
 	private static class SkinLoader implements SimpleSynchronousResourceReloadListener {
 		@Override
 		public Identifier getFabricId() {
-			return new Identifier("offlineskins", "skin_loader");
+			return new Identifier("specialskin", "skin_loader");
 		}
 
 		@Override
@@ -121,7 +116,7 @@ public final class OfflineSkins implements ClientModInitializer {
 		                            boolean skin, boolean self,
 		                            ResourceManager manager, TextureManager binder)
 				throws Exception {
-			Identifier id = new Identifier("offlineskins", path);
+			Identifier id = new Identifier("specialskin", path);
 
 			try {
 				makeTexture(skin, id, manager, binder);
