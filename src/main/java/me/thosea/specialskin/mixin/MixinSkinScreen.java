@@ -1,9 +1,9 @@
-package me.thosea.offlineskins.mixin;
+package me.thosea.specialskin.mixin;
 
-import me.thosea.offlineskins.OfflineSkins;
-import me.thosea.offlineskins.SkinSettings;
-import me.thosea.offlineskins.accessor.PlayerEntryAccessor;
-import me.thosea.offlineskins.screen.SettingsScreen;
+import me.thosea.specialskin.SkinSettings;
+import me.thosea.specialskin.SpecialSkin;
+import me.thosea.specialskin.accessor.PlayerEntryAccessor;
+import me.thosea.specialskin.screen.SettingsScreen;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.SkinOptionsScreen;
@@ -43,15 +43,15 @@ public abstract class MixinSkinScreen extends Screen {
 	private void addCustomButton(CallbackInfo ci) {
 		if(isCustom) return;
 		var button = addDrawableChild(ButtonWidget.builder(
-						Text.translatable("offlineskins.settings"),
+						Text.translatable("specialskin.settings"),
 						ignored -> client.setScreen(new SettingsScreen(this)))
 				.dimensions(this.width / 2 - 100, this.height / 6 + 96, 200, 20)
 				.build());
 
-		if(OfflineSkins.ERROR != null) {
+		if(SpecialSkin.ERROR != null) {
 			button.active = false;
 			button.setTooltip(Tooltip.of(Text.translatable(
-					"offlineskins.settings.error", OfflineSkins.ERROR)));
+					"specialskin.settings.error", SpecialSkin.ERROR)));
 		}
 	}
 
@@ -70,12 +70,12 @@ public abstract class MixinSkinScreen extends Screen {
 
 	@Inject(method = "init", at = @At("HEAD"))
 	private void preInit(CallbackInfo ci) {
-		if(OfflineSkins.ENTERING_SKIN_SCREEN) {
-			OfflineSkins.ENTERING_SKIN_SCREEN = false;
+		if(SpecialSkin.ENTERING_SKIN_SCREEN) {
+			SpecialSkin.ENTERING_SKIN_SCREEN = false;
 			isCustom = true;
 			index = -1;
 
-			this.title = Text.translatable("offlineskins.settings.modelParts.title");
+			this.title = Text.translatable("specialskin.settings.modelParts.title");
 		} else {
 			isCustom = false;
 		}
@@ -117,11 +117,11 @@ public abstract class MixinSkinScreen extends Screen {
 		if(!isCustom && client.player != null) {
 			var entry = client.player.getPlayerListEntry();
 
-			if(entry != null && ((PlayerEntryAccessor) entry).isOverriddenOfflineSkins()) {
+			if(entry != null && ((PlayerEntryAccessor) entry).sskin$isOverridden()) {
 				ClickableWidget widget = (ClickableWidget) element;
 
 				widget.active = false;
-				widget.setTooltip(Tooltip.of(Text.translatable("offlineskins.SCDisabled")));
+				widget.setTooltip(Tooltip.of(Text.translatable("specialskin.SCDisabled")));
 			}
 		}
 
