@@ -1,6 +1,6 @@
-package me.thosea.offlineskins.screen;
+package me.thosea.specialskin.screen;
 
-import me.thosea.offlineskins.accessor.ConfirmScreenAccessor;
+import me.thosea.specialskin.accessor.ConfirmScreenAccessor;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static me.thosea.offlineskins.SkinSettings.PREFIX;
+import static me.thosea.specialskin.SkinSettings.PREFIX;
 
 public class SetFileScreen extends ConfirmScreen {
 	private final Screen parent;
@@ -49,11 +49,11 @@ public class SetFileScreen extends ConfirmScreen {
 		this.accessor = (ConfirmScreenAccessor) this;
 
 		// We can't access properties before calling super
-		accessor.setCallback(confirmed -> {
+		accessor.sskin$setCallback(confirmed -> {
 			if(confirmed) {
 				setButtonActivation();
 
-				if(!accessor.getButtons().get(0).active) {
+				if(!accessor.sskin$getWidgets().get(0).active) {
 					return;
 				}
 
@@ -65,7 +65,7 @@ public class SetFileScreen extends ConfirmScreen {
 
 		if(ogFile != null) {
 			Text text = Text.translatable(PREFIX + "currentFile", ogFile.getName());
-			accessor.setMessage(combine(text));
+			accessor.sskin$setMessage(combine(text));
 		}
 	}
 
@@ -124,14 +124,14 @@ public class SetFileScreen extends ConfirmScreen {
 			return;
 		}
 
-		ButtonWidget yes = accessor.getButtons().get(0);
+		ButtonWidget yes = accessor.sskin$getWidgets().get(0);
 
 		if(selected != null && !selected.exists()) {
 			selected = null;
 		}
 
 		if(allowNoFile) {
-			ButtonWidget remove = accessor.getButtons().get(2);
+			ButtonWidget remove = accessor.sskin$getWidgets().get(2);
 			remove.active = selected != null;
 		}
 
@@ -140,9 +140,9 @@ public class SetFileScreen extends ConfirmScreen {
 
 			if(selected != null) {
 				Text text = Text.translatable(PREFIX + "currentFile", makeFileText());
-				accessor.setMessage(combine(text));
+				accessor.sskin$setMessage(combine(text));
 			} else {
-				accessor.setMessage(message);
+				accessor.sskin$setMessage(message);
 			}
 		} else {
 			yes.active = true;
@@ -150,7 +150,7 @@ public class SetFileScreen extends ConfirmScreen {
 			Text text = selected == null
 					? Text.translatable(PREFIX + "removeFile")
 					: Text.translatable(PREFIX + "setFileTo", makeFileText());
-			accessor.setMessage(combine(text));
+			accessor.sskin$setMessage(combine(text));
 		}
 	}
 

@@ -1,7 +1,7 @@
-package me.thosea.offlineskins.screen;
+package me.thosea.specialskin.screen;
 
 import com.google.common.collect.ImmutableList;
-import me.thosea.offlineskins.SkinSettings;
+import me.thosea.specialskin.SkinSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static me.thosea.offlineskins.SkinSettings.PREFIX;
+import static me.thosea.specialskin.SkinSettings.PREFIX;
 
 public final class SkinPackScreen extends Screen {
 	private final Screen parent;
@@ -127,7 +127,7 @@ public final class SkinPackScreen extends Screen {
 		}
 
 		try(var output = new ZipOutputStream(new FileOutputStream(packZip))) {
-			String desc = Formatting.DARK_AQUA + "Skin pack for OfflineSkins\\n";
+			String desc = Formatting.DARK_AQUA + "Skin pack for SpecialSkin\\n";
 			desc += Formatting.GOLD + "Name: " + Formatting.RED + Formatting.ITALIC;
 			desc += StringUtils.abbreviate(name.replaceAll("[\"\\\\]", ""), 18);
 
@@ -140,7 +140,7 @@ public final class SkinPackScreen extends Screen {
 					.getBytes(StandardCharsets.UTF_8);
 
 			ZipEntry mcMeta = new ZipEntry("pack.mcmeta");
-			mcMeta.setComment("OfflineSkins Skin Pack");
+			mcMeta.setComment("SpecialSkin Skin Pack");
 			mcMeta.setTime(System.currentTimeMillis());
 			mcMeta.setSize(bytes.length);
 			output.putNextEntry(mcMeta);
@@ -148,9 +148,9 @@ public final class SkinPackScreen extends Screen {
 
 			Path iconPath = FabricLoader
 					.getInstance()
-					.getModContainer("offlineskins")
+					.getModContainer("specialskin")
 					.orElseThrow()
-					.findPath("assets/offlineskins/icon.png")
+					.findPath("assets/specialskin/icon.png")
 					.orElseThrow();
 
 			try(var input = Files.newInputStream(iconPath)) {
@@ -172,7 +172,7 @@ public final class SkinPackScreen extends Screen {
 				if(fileHolder.file == null) continue;
 				if(!fileHolder.file.exists()) continue;
 
-				ZipEntry entry = new ZipEntry("assets/offlineskins/" + fileHolder.id);
+				ZipEntry entry = new ZipEntry("assets/specialskin/" + fileHolder.id);
 
 				try(var input = new FileInputStream(fileHolder.file)) {
 					bytes = input.readAllBytes();
@@ -220,7 +220,7 @@ public final class SkinPackScreen extends Screen {
 					client.setScreen(new SetFileScreen(
 							this,
 							Text.translatable(PREFIX + "skinPacks." + key + ".set"),
-							Text.translatable("offlineskins.settings.skinPacks.setFile"),
+							Text.translatable("specialskin.settings.skinPacks.setFile"),
 							holder.file,
 							true,
 							this::isValidFile,
@@ -273,10 +273,10 @@ public final class SkinPackScreen extends Screen {
 
 	private class TextFieldEntry extends ElementListWidget.Entry<TextFieldEntry> {
 		private final TextEntry descText = new TextEntry(
-				Text.translatable("offlineskins.settings.skinPacks.name")
+				Text.translatable("specialskin.settings.skinPacks.name")
 		);
 		private final TextEntry enterText = new TextEntry(
-				Text.translatable("offlineskins.settings.skinPacks.name.enter")
+				Text.translatable("specialskin.settings.skinPacks.name.enter")
 		);
 		private final TextFieldWidget delegate = new TextFieldWidget(
 				client.textRenderer,
@@ -416,6 +416,6 @@ public final class SkinPackScreen extends Screen {
 	private void setFinishButtonError(String error) {
 		finishButton.active = false;
 		finishButton.setTooltip(Tooltip.of(Text.translatable(
-				"offlineskins.settings.skinPacks.finish." + error)));
+				"specialskin.settings.skinPacks.finish." + error)));
 	}
 }

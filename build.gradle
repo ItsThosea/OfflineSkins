@@ -62,7 +62,7 @@ jar {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/offlineskins.accesswidener")
+    accessWidenerPath = file("src/main/resources/specialskin.accesswidener")
 }
 
 // configure the maven publication
