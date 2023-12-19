@@ -1,5 +1,7 @@
 package me.thosea.specialskin.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.thosea.specialskin.SkinSettings;
 import me.thosea.specialskin.SpecialSkin;
 import me.thosea.specialskin.accessor.PlayerEntryAccessor;
@@ -21,27 +23,25 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SkinOptionsScreen.class)
 public abstract class MixinSkinScreen extends Screen {
-	@Unique private boolean isCustom;
+	@Unique private boolean isCustomModelParts;
 
 	protected MixinSkinScreen(Text title) {
 		super(title);
 		throw new AssertionError();
 	}
 
-	// Vanilla screen
 	@ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget$Builder;dimensions(IIII)Lnet/minecraft/client/gui/widget/ButtonWidget$Builder;"), index = 1)
 	private int offsetDoneButton(int previous) {
-		return isCustom ? previous : previous + 24;
+		return isCustomModelParts ? previous : previous + 24;
 	}
 
 	@Inject(method = "init", at = @At("TAIL"))
 	private void addCustomButton(CallbackInfo ci) {
-		if(isCustom) return;
+		if(isCustomModelParts) return;
 		var button = addDrawableChild(ButtonWidget.builder(
 						Text.translatable("specialskin.settings"),
 						ignored -> client.setScreen(new SettingsScreen(this)))
@@ -56,39 +56,39 @@ public abstract class MixinSkinScreen extends Screen {
 	}
 
 	// Custom screen
-	@Redirect(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;isPlayerModelPartEnabled(Lnet/minecraft/client/render/entity/PlayerModelPart;)Z"))
-	private boolean onIsEnabled(GameOptions instance, PlayerModelPart part) {
-		return isCustom
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;isPlayerModelPartEnabled(Lnet/minecraft/client/render/entity/PlayerModelPart;)Z"))
+	private boolean onIsEnabled(GameOptions instance, PlayerModelPart part, Operation<Boolean> original) {
+		return isCustomModelParts
 				? SkinSettings.ENABLED_PARTS.contains(part)
-				: instance.isPlayerModelPartEnabled(part);
+				: original.call(instance, part);
 	}
 
-	// Very hacky but needed...
 	@Unique private static final PlayerModelPart[] modelParts = PlayerModelPart.values();
+	@Unique private int buttonIndex;
 
-	@Unique private int index;
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void preInit(CallbackInfo ci) {
+		if(SpecialSkin.ENTERING_CUSTOM_MODEL_PARTS) {
+			SpecialSkin.ENTERING_CUSTOM_MODEL_PARTS = false;
+			this.isCustomModelParts = true;
+			this.title = Text.translatable("specialskin.settings.modelParts.title");
+		}
+	}
 
 	@Inject(method = "init", at = @At("HEAD"))
-	private void preInit(CallbackInfo ci) {
-		if(SpecialSkin.ENTERING_SKIN_SCREEN) {
-			SpecialSkin.ENTERING_SKIN_SCREEN = false;
-			isCustom = true;
-			index = -1;
-
-			this.title = Text.translatable("specialskin.settings.modelParts.title");
-		} else {
-			isCustom = false;
+	private void onInit(CallbackInfo ci) {
+		if(this.isCustomModelParts) {
+			this.buttonIndex = -1;
 		}
-
 	}
 
 	@ModifyArg(method = "init", index = 5, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/CyclingButtonWidget$Builder;build(IIIILnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/CyclingButtonWidget$UpdateCallback;)Lnet/minecraft/client/gui/widget/CyclingButtonWidget;"))
 	private UpdateCallback<Boolean> onSetConsumer(UpdateCallback<Boolean> callback) {
-		if(!isCustom) return callback;
+		if(!isCustomModelParts) return callback;
 
-		index++;
+		buttonIndex++;
 
-		int ourIndex = index;
+		int ourIndex = buttonIndex;
 		return (button, enabled) -> {
 			PlayerModelPart part = modelParts[ourIndex];
 
@@ -100,21 +100,18 @@ public abstract class MixinSkinScreen extends Screen {
 		};
 	}
 
-
-	@Redirect(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;getMainArm()Lnet/minecraft/client/option/SimpleOption;"))
-	private SimpleOption<Arm> onGetArm(GameOptions instance) {
-		return isCustom ? null : instance.getMainArm();
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;getMainArm()Lnet/minecraft/client/option/SimpleOption;"))
+	private SimpleOption<?> onAddArmButton(GameOptions options, Operation<SimpleOption<Arm>> original) {
+		if(isCustomModelParts) {
+			return SkinSettings.ENABLED_PARTS_MODE;
+		} else {
+			return original.call(options);
+		}
 	}
 
-	@Redirect(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/SimpleOption;createWidget(Lnet/minecraft/client/option/GameOptions;III)Lnet/minecraft/client/gui/widget/ClickableWidget;"))
-	private ClickableWidget onGetSkin(SimpleOption<Arm> instance,
-	                                  GameOptions options, int x, int y, int width) {
-		return isCustom ? null : instance.createWidget(options, x, y, width);
-	}
-
-	@Redirect(method = "init", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/screen/option/SkinOptionsScreen;addDrawableChild(Lnet/minecraft/client/gui/Element;)Lnet/minecraft/client/gui/Element;"))
-	private Element onAddSkinWidget(SkinOptionsScreen instance, Element element) {
-		if(!isCustom && client.player != null) {
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/screen/option/SkinOptionsScreen;addDrawableChild(Lnet/minecraft/client/gui/Element;)Lnet/minecraft/client/gui/Element;"))
+	private Element onAddSkinWidget(SkinOptionsScreen instance, Element element, Operation<Element> original) {
+		if(!isCustomModelParts && client.player != null) {
 			var entry = client.player.getPlayerListEntry();
 
 			if(entry != null && ((PlayerEntryAccessor) entry).sskin$isOverridden()) {
@@ -125,18 +122,6 @@ public abstract class MixinSkinScreen extends Screen {
 			}
 		}
 
-		return addDrawableChild(cast(element));
-	}
-
-	@Redirect(method = "init", at = @At(value = "INVOKE", ordinal = 1, target = "Lnet/minecraft/client/gui/screen/option/SkinOptionsScreen;addDrawableChild(Lnet/minecraft/client/gui/Element;)Lnet/minecraft/client/gui/Element;"))
-	private Element onAddHAndWidget(SkinOptionsScreen instance, Element element) {
-		return isCustom
-				? null // no hand option
-				: this.addDrawableChild(cast(element));
-	}
-
-	@Unique
-	private <T> T cast(Object obj) {
-		return (T) obj;
+		return original.call(instance, element);
 	}
 }

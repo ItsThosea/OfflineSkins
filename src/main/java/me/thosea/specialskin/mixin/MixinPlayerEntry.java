@@ -17,9 +17,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerListEntry.class)
 public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
-	@Unique private SkinTextures specialSkinTexture;
+	@Unique private SkinTextures texture;
 	@Unique private boolean overrideSkin;
 	@Unique private boolean overrideInTab;
+	@Unique private boolean overrideEnabledParts;
 
 	@Shadow
 	public abstract GameProfile getProfile();
@@ -36,15 +37,17 @@ public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
 		boolean local = isLocalPlayer();
 
 		if(!shouldOverride(local)) {
-			this.specialSkinTexture = null;
-			this.overrideInTab = false;
+			this.texture = null;
 			this.overrideSkin = false;
+			this.overrideInTab = false;
+			this.overrideEnabledParts = false;
 			return;
 		}
 
 		this.overrideInTab = SkinSettings.TAB_MODE.getValue().allow.get(local);
+		this.overrideEnabledParts = SkinSettings.ENABLED_PARTS_MODE.getValue().allow.get(local);
 
-		this.specialSkinTexture = new SkinTextures(
+		this.texture = new SkinTextures(
 				getSkinTexture(local),
 				null,
 				getCapeTexture(local),
@@ -88,7 +91,7 @@ public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
 
 	@Override
 	public boolean sskin$isOverridden() {
-		return specialSkinTexture != null;
+		return texture != null;
 	}
 
 	@Override
@@ -102,7 +105,12 @@ public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
 	}
 
 	@Override
+	public boolean sskin$overrideEnabledParts() {
+		return overrideEnabledParts;
+	}
+
+	@Override
 	public SkinTextures sskin$getTexture() {
-		return specialSkinTexture;
+		return texture;
 	}
 }
