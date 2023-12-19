@@ -1,55 +1,50 @@
 package me.thosea.specialskin.mixin;
 
-import com.mojang.authlib.GameProfile;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.thosea.specialskin.SkinSettings;
 import me.thosea.specialskin.accessor.PlayerEntryAccessor;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractClientPlayerEntity.class)
-public abstract class MixinClientPlayer extends PlayerEntity {
+public abstract class MixinClientPlayer extends MixinPlayer {
 	@Shadow
 	@Nullable
 	public abstract PlayerListEntry getPlayerListEntry();
 
-	protected MixinClientPlayer(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
-		super(world, pos, yaw, gameProfile);
-		throw new AssertionError("Nuh uh");
-	}
-
 	@Override
-	public boolean isPartVisible(PlayerModelPart part) {
+	protected void onIsPartEnabled(PlayerModelPart part, CallbackInfoReturnable<Boolean> cir) {
 		PlayerEntryAccessor accessor = (PlayerEntryAccessor) getPlayerListEntry();
 
-		return accessor != null && accessor.sskin$isOverridden()
-				? SkinSettings.ENABLED_PARTS.contains(part)
-				: super.isPartVisible(part);
+		if(accessor != null && accessor.sskin$overrideEnabledParts()) {
+			cir.setReturnValue(SkinSettings.ENABLED_PARTS.contains(part));
+		}
 	}
 
-	@Redirect(method = "getSkinTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getSkinTexture()Lnet/minecraft/util/Identifier;"))
-	private Identifier getSkinTextures(PlayerListEntry entry) {
+	@WrapOperation(method = "getSkinTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getSkinTexture()Lnet/minecraft/util/Identifier;"))
+	private Identifier getSkinTextures(PlayerListEntry entry, Operation<Identifier> original) {
 		PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
 
 		return accessor.sskin$overrideSkins()
 				? accessor.sskin$skinTexture()
-				: entry.getSkinTexture();
+				: original.call(entry);
 	}
 
-	@Redirect(method = "getCapeTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getCapeTexture()Lnet/minecraft/util/Identifier;"))
-	private Identifier getCapeTexture(PlayerListEntry entry) {
+	@WrapOperation(method = "getCapeTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/PlayerListEntry;getCapeTexture()Lnet/minecraft/util/Identifier;"))
+	private Identifier getCapeTexture(PlayerListEntry entry, Operation<Identifier> original) {
 		PlayerEntryAccessor accessor = (PlayerEntryAccessor) entry;
 		Identifier textures = accessor.sskin$capeTexture();
 
-		return textures == null ? entry.getCapeTexture() : textures;
+		return textures == null
+				? original.call(entry)
+				: textures;
 	}
 }

@@ -22,9 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
 	@Unique private Identifier ssSkinTexture;
 	@Unique private Identifier ssCapeTexture;
+
 	@Unique private boolean isOverridden;
 	@Unique private boolean overrideSkins;
 	@Unique private boolean overrideInTab;
+	@Unique private boolean overrideEnabledParts;
 
 	@Shadow
 	public abstract GameProfile getProfile();
@@ -49,11 +51,13 @@ public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
 			this.isOverridden = false;
 			this.overrideSkins = false;
 			this.overrideInTab = false;
+			this.overrideEnabledParts = false;
 			return;
 		}
 
 		this.isOverridden = true;
 		this.overrideInTab = SkinSettings.TAB_MODE.getValue().allow.get(local);
+		this.overrideEnabledParts = SkinSettings.ENABLED_PARTS_MODE.getValue().allow.get(local);
 
 		this.ssSkinTexture = getSkinTexture(local);
 		this.ssCapeTexture = getCapeTexture(local);
@@ -107,6 +111,11 @@ public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
 	}
 
 	@Override
+	public boolean sskin$overrideEnabledParts() {
+		return overrideEnabledParts;
+	}
+
+	@Override
 	public Identifier sskin$skinTexture() {
 		return ssSkinTexture;
 	}
@@ -118,7 +127,7 @@ public abstract class MixinPlayerEntry implements PlayerEntryAccessor {
 
 	@Inject(method = "getModel", at = @At("HEAD"), cancellable = true)
 	private void onGetModel(CallbackInfoReturnable<String> cir) {
-		if(isOverridden) {
+		if(overrideSkins) {
 			cir.setReturnValue(SkinSettings.MODEL_TYPE.getValue().name);
 		}
 	}

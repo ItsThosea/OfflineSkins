@@ -18,6 +18,7 @@ public abstract class MixinGameOptions {
 		visitor.accept("specialskin.skinMode", SkinSettings.SKIN_MODE);
 		visitor.accept("specialskin.capeMode", SkinSettings.CAPE_MODE);
 		visitor.accept("specialskin.tabMode", SkinSettings.TAB_MODE);
+		visitor.accept("specialskin.enabledPartsMode", SkinSettings.ENABLED_PARTS_MODE);
 		visitor.accept("specialskin.modelType", SkinSettings.MODEL_TYPE);
 
 		for(PlayerModelPart part : PlayerModelPart.values()) {
