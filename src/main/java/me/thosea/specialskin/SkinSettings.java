@@ -34,6 +34,8 @@ public final class SkinSettings {
 			makeOverrideMode("capeMode", OverrideMode.EVERYBODY);
 	public static final SimpleOption<OverrideMode> TAB_MODE =
 			makeOverrideMode("tabMode", OverrideMode.EVERYBODY);
+	public static final SimpleOption<OverrideMode> ENABLED_PARTS_MODE =
+			makeOverrideMode("enabledPartsMode", OverrideMode.EVERYBODY);
 	public static final SimpleOption<Model> MODEL_TYPE =
 			new SimpleOption<>(PREFIX + "modelType",
 					SimpleOption.emptyTooltip(),
@@ -48,7 +50,7 @@ public final class SkinSettings {
 	public static final SimpleOption<?> BUTTON_MODEL_PARTS = makeButtonOption(
 			PREFIX + "modelParts",
 			() -> {
-				SpecialSkin.ENTERING_SKIN_SCREEN = true;
+				SpecialSkin.ENTERING_CUSTOM_MODEL_PARTS = true;
 
 				MinecraftClient client = MinecraftClient.getInstance();
 				client.setScreen(new SkinOptionsScreen(client.currentScreen, client.options));
@@ -59,6 +61,7 @@ public final class SkinSettings {
 				MinecraftClient client = MinecraftClient.getInstance();
 				client.setScreen(new SkinPackScreen(client.currentScreen));
 			});
+
 	public static final Set<PlayerModelPart> ENABLED_PARTS = EnumSet.allOf(PlayerModelPart.class);
 
 	private static final OverrideMode[] values = OverrideMode.values();

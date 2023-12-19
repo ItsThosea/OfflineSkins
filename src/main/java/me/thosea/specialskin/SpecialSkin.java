@@ -40,7 +40,7 @@ public final class SpecialSkin implements ClientModInitializer {
 	public static Identifier OTHER_SKIN_ID = SKIN_ID;
 	public static Identifier OTHER_CAPE_ID = CAPE_ID;
 
-	public static boolean ENTERING_SKIN_SCREEN = false;
+	public static boolean ENTERING_CUSTOM_MODEL_PARTS = false;
 
 	@Override
 	public void onInitializeClient() {

@@ -8,6 +8,7 @@ public interface PlayerEntryAccessor {
 	boolean sskin$isOverridden();
 	boolean sskin$isSkinOverridden();
 	boolean sskin$overrideInTab();
+	boolean sskin$overrideEnabledParts();
 
 	SkinTextures sskin$getTexture();
 }
